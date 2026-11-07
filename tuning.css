@@ -1,0 +1,63 @@
+/* ===== Раздел «Тюнинг» ===== */
+.tn-sub{color:var(--mut);margin:-6px 0 4px}
+.tn-cur{display:flex;align-items:center;gap:8px;font:600 13px Manrope,sans-serif;color:var(--mut)}
+.tn-cur i{width:14px;height:14px;border-radius:50%;border:1px solid #3a3f49;display:inline-block}
+
+.tn-wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+@media (max-width:900px){.tn-wrap{grid-template-columns:1fr}}
+.tn-back{margin-bottom:10px;padding:0}
+.tn-room{--rh:clamp(240px,40vw,380px);position:relative;height:var(--rh);border-radius:16px;overflow:hidden;border:1px solid var(--line);
+  background:linear-gradient(#171a20,#0c0e12 66%)}
+.tn-door{position:absolute;left:7%;right:7%;top:0;bottom:34%;border-left:3px solid #262a32;border-right:3px solid #262a32;
+  background:repeating-linear-gradient(180deg,#1d2027 0 14px,#12141a 14px 16px);opacity:.85}
+.tn-lamps i{position:absolute;top:0;width:110px;height:8px;margin-left:-55px;border-radius:0 0 8px 8px;background:#fff6c8;
+  box-shadow:0 0 36px 16px rgba(255,236,150,.32),0 30px 90px 30px rgba(255,236,150,.10)}
+.tn-lamps i:nth-child(1){left:18%}.tn-lamps i:nth-child(2){left:50%}.tn-lamps i:nth-child(3){left:82%}
+.tn-sign{position:absolute;top:16px;left:18px;font:700 14px Oswald,sans-serif;letter-spacing:.3em;color:var(--gold);
+  border:2px solid var(--gold);padding:3px 10px 3px 13px;border-radius:4px;background:rgba(0,0,0,.45);z-index:3}
+.tn-floor{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(#2a2e36,#14161b)}
+.tn-floor::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;
+  background:repeating-linear-gradient(135deg,var(--gold) 0 10px,#111 10px 20px)}
+.tn-floor::after{content:"";position:absolute;left:12%;right:12%;top:18%;height:55%;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(255,236,170,.16),transparent 70%)}
+.tn-car{position:absolute;left:50%;bottom:calc(var(--rh)*.08);transform:translateX(-50%);width:min(84%,640px);display:flex;justify-content:center;z-index:2}
+.tn-car::before{content:"";position:absolute;left:6%;right:6%;bottom:-6px;height:22px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.75),transparent 70%);filter:blur(4px);z-index:-1}
+.tn-car img{display:block;max-width:100%;max-height:calc(var(--rh)*.7);object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,.5))}
+.tn-car svg{width:100%;max-height:calc(var(--rh)*.6)}
+.tn-spray{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:4;
+  background:radial-gradient(ellipse at 50% 62%,rgba(255,255,255,.55),rgba(255,255,255,0) 55%)}
+.tn-spray.go{animation:tnSpray .7s ease-out}
+@keyframes tnSpray{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+.tn-name{margin-top:12px;font-size:18px}
+.tn-name span{color:var(--mut);font-size:14px;margin-left:6px}
+
+.tn-panel{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.tn-panel h3{font:700 22px Oswald,sans-serif;letter-spacing:.04em}
+.tn-st{color:var(--mut);font-size:14px;min-height:42px}
+.tn-st b{color:var(--txt)}
+.tn-sw{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.tn-s{aspect-ratio:1;border-radius:50%;border:2px solid #2b2f38;background:var(--sc);cursor:pointer;padding:0;transition:transform .15s,box-shadow .15s}
+.tn-s:hover{transform:scale(1.08)}
+.tn-s.fac{background:linear-gradient(135deg,#3a3d45 46%,#c7cad2 54%)}
+.tn-s.on{border-color:#fff;box-shadow:0 0 0 2px var(--gold)}
+.tn-own{display:flex;align-items:center;justify-content:space-between;color:var(--mut);font:600 14px Manrope,sans-serif}
+.tn-own input{width:54px;height:34px;border:2px solid #2b2f38;border-radius:8px;background:none;padding:0;cursor:pointer}
+.tn-price{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
+.tn-price span{color:var(--mut);font-size:14px}
+.tn-price b{font:700 24px Oswald,sans-serif;color:var(--gold)}
+#tnApply{width:100%}
+.tn-note{color:var(--mut);font-size:12px;text-align:center}
+
+/* тонировка */
+.tn-sep{border-top:1px solid var(--line);margin-top:4px}
+.tn-tint{display:flex;align-items:center;gap:12px}
+.tn-tint input[type=range]{flex:1;min-width:0;height:28px;accent-color:var(--gold);cursor:pointer;background:none}
+.tn-tint output{min-width:46px;text-align:right;font:700 18px Oswald,sans-serif;color:var(--gold)}
+#tnTApply{width:100%}
+
+/* загрузка: чёрный экран и одна надпись */
+#tuneLoad{position:fixed;inset:0;z-index:100000;background:#000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .35s ease}
+#tuneLoad.on{opacity:1}
+#tuneLoad span{color:#fff;font:700 clamp(22px,5vw,38px) Oswald,sans-serif;letter-spacing:.08em;text-align:center;padding:0 20px}
+@media (prefers-reduced-motion:reduce){.tn-spray.go{animation:none}}

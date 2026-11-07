@@ -1,0 +1,43 @@
+/* ===== Заставка PLATE SPIN ===== */
+html.intro-on,html.intro-on body{overflow:hidden!important}
+#intro{position:fixed;inset:0;z-index:99999;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:default;-webkit-user-select:none;user-select:none;touch-action:none;
+  transition:opacity .55s ease,transform .55s cubic-bezier(.7,0,.3,1),filter .55s ease}
+#intro.out{opacity:0;transform:scale(1.12);filter:blur(6px);pointer-events:none}
+#intro .i-glow{position:absolute;left:50%;top:50%;width:90vmin;height:90vmin;margin:-45vmin 0 0 -45vmin;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,235,0,.32),rgba(255,235,0,0) 62%);opacity:0;transform:scale(.4);
+  animation:iGlow 3.4s .35s ease-out forwards}
+#intro .i-lines{position:absolute;inset:0;pointer-events:none}
+#intro .i-lines i{position:absolute;left:-40%;height:2px;width:40%;border-radius:2px;opacity:0;
+  background:linear-gradient(90deg,transparent,#ffeb00 60%,#fff);animation:iLine .9s cubic-bezier(.2,.7,.2,1) forwards}
+#intro .i-logo{position:relative;width:min(84vw,860px);aspect-ratio:1334/172;animation:iPulse .9s 3.4s ease-in-out}
+#intro .i-logo img{position:absolute;top:0;height:100%;display:block;user-select:none;-webkit-user-drag:none;will-change:transform,opacity,filter}
+#intro .i-plate{left:0;width:57.12%;opacity:0;animation:iInL .9s .25s cubic-bezier(.16,.9,.2,1) forwards}
+#intro .i-spin{position:absolute;top:0;left:57.34%;width:42.66%;height:100%;animation:iSpinGlow 1s 3.2s ease-out forwards}
+#intro .i-win{position:absolute;top:-35%;width:40%;height:170%;opacity:0;animation:iFade .3s .55s forwards;
+  -webkit-mask-image:linear-gradient(180deg,transparent 2%,#000 24%,#000 76%,transparent 98%);mask-image:linear-gradient(180deg,transparent 2%,#000 24%,#000 76%,transparent 98%)}
+#intro .i-win.land{animation:iFade .01s forwards,iPop .35s ease-out}
+#intro .i-strip{width:100%;height:calc(var(--n) * 100%);will-change:transform,filter;animation:iReel var(--t) var(--d) cubic-bezier(.12,.62,.2,1) both,iBlur var(--t) var(--d) ease-out both}
+#intro .i-cell{height:calc(100% / var(--n));display:flex;align-items:center;justify-content:center}
+#intro .i-cell img{position:static;height:calc(100% / 1.7);max-width:none;width:auto;display:block;user-select:none;-webkit-user-drag:none}
+#intro .i-shine{position:absolute;inset:-20% 0;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:linear-gradient(#000,#000);}
+#intro .i-shine::after{content:"";position:absolute;top:0;bottom:0;left:-30%;width:22%;transform:skewX(-22deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);mix-blend-mode:overlay;
+  animation:iShine 1s 3.3s ease-in-out forwards}
+#intro .i-bar{position:absolute;left:50%;bottom:12vh;width:min(46vw,300px);height:3px;margin-left:calc(min(46vw,300px)/-2);
+  background:#1b1b1b;border-radius:3px;overflow:hidden;opacity:0;animation:iFade .4s .5s forwards}
+#intro .i-bar b{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffeb00,#fff6a0);transform:scaleX(0);transform-origin:left;
+  animation:iBar 3.8s .5s cubic-bezier(.45,.05,.3,1) forwards}
+@keyframes iInL{0%{opacity:0;transform:translateX(-18vw) skewX(-14deg);filter:blur(12px)}60%{opacity:1}100%{opacity:1;transform:none;filter:blur(0)}}
+@keyframes iShine{from{left:-30%}to{left:115%}}
+@keyframes iPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+@keyframes iGlow{0%{opacity:0;transform:scale(.4)}40%{opacity:1}100%{opacity:.7;transform:scale(1.1)}}
+@keyframes iLine{0%{opacity:0;transform:translateX(0)}15%{opacity:1}100%{opacity:0;transform:translateX(420%)}}
+@keyframes iBar{to{transform:scaleX(1)}}
+@keyframes iFade{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){#intro .i-lines{display:none}}
+/* буквы «выпадают» сверху вниз, как барабаны, и останавливаются на SPIN */
+@keyframes iReel{from{transform:translateY(calc((var(--n) - 1) / var(--n) * -100%))}to{transform:translateY(0)}}
+@keyframes iBlur{0%{filter:blur(5px)}70%{filter:blur(3px)}100%{filter:blur(0)}}
+@keyframes iPop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes iSpinGlow{from{filter:drop-shadow(0 0 0 rgba(255,235,0,0))}to{filter:drop-shadow(0 0 18px rgba(255,235,0,.55))}}
