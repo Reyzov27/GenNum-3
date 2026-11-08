@@ -1228,10 +1228,7 @@ input,select,textarea{font-size:16px} /* чтобы iOS не зумил стра
 
 /* ===== Фон главного экрана (где выпадают номера) ===== */
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .4s;
-  background:
-    radial-gradient(ellipse 70% 38% at 50% 78%,rgba(190,195,205,.14),transparent 70%),
-    radial-gradient(ellipse 80% 55% at 50% 38%,#1e2025 0%,#121316 55%,#08090a 100%),
-    #08090a}
+  background:#08090b url(bg.jpg) center bottom/cover no-repeat}
 body:has(#v-drop.active)::before{opacity:1}
 
 /* ===== Раздел «Информация» (копирует вид «Помощи») ===== */
