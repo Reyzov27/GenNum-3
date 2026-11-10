@@ -81,7 +81,7 @@ var BODY = {
 };
 
 /* ===== Состояние и сохранение ===== */
-function fresh() { return {balance:250000, inv:[], cars:[], country:'RU', ver:3, donate:0, dv:1, dBase:0, dEarn:0, dSpend:0, opened:0, opn:{}, free:{}, claimed:{}, dailyAt:0, dailyN:0, adAt:0, adN:0, adCl:{}, adCaseAt:0, promo:{}, rewards:[], fs:0, hr:{st:'ready', left:0}, rl:{st:'ready', left:0}, pend:null, col:{}, mg:{best:0, games:0}, xp:0, dry:0, last:[], mis:null, pass:null, ach:{}, stat:{spins:0,spent:0,kept:0,sold:0,cases:0,best:0,bestP:null,byRar:[0,0,0,0,0,0,0],upg:0,upgWin:0,frames:0,misDone:0}}; }
+function fresh() { return {balance:1000000, inv:[], cars:[], country:'RU', ver:3, donate:0, dv:1, dBase:0, dEarn:0, dSpend:0, opened:0, opn:{}, free:{}, claimed:{}, dailyAt:0, dailyN:0, adAt:0, adN:0, adCl:{}, adCaseAt:0, promo:{}, rewards:[], fs:0, hr:{st:'ready', left:0}, rl:{st:'ready', left:0}, pend:null, col:{}, mg:{best:0, games:0}, xp:0, dry:0, last:[], mis:null, pass:null, ach:{}, stat:{spins:0,spent:0,kept:0,sold:0,cases:0,best:0,bestP:null,byRar:[0,0,0,0,0,0,0],upg:0,upgWin:0,frames:0,misDone:0}}; }
 var ACCEPT_UNSIGNED = false;  /* true на один релиз — принять старые сохранения без подписи */
 var SIG_SALT = 'gl7f3a91c2-nomera-9d41';
 function sigHash(str) {
@@ -92,11 +92,13 @@ function sigHash(str) {
 function sansSig(o) { var c = {}, k; for (k in o) if (k !== 'sig') c[k] = o[k]; return c; }
 function sigOk(p) { if (!p.sig) return ACCEPT_UNSIGNED; return p.sig === sigHash(JSON.stringify(sansSig(p))); }
 var S = fresh();
+var HAD_SAVE = false;  /* true, если у игрока уже было валидное сохранение (т.е. он не новичок) */
 try {
   var raw = localStorage.getItem(KEY);
   if (raw) {
     var parsed = JSON.parse(raw);
     if (parsed && typeof parsed.balance === 'number' && isFinite(parsed.balance) && sigOk(parsed)) {
+      HAD_SAVE = true;
       S.balance = Math.min(Math.max(0, parsed.balance), 1e13);
       S.inv = Array.isArray(parsed.inv) ? parsed.inv : [];
       S.cars = Array.isArray(parsed.cars) ? parsed.cars : [];
@@ -115,8 +117,15 @@ try {
     }
   }
 } catch (e) {}
-try { if (!localStorage.getItem('nomera-bal100k')) { S.balance = 250000; localStorage.setItem('nomera-bal100k', '1'); } } catch (e) {}
+try { if (!localStorage.getItem('nomera-bal100k')) { S.balance = 1000000; localStorage.setItem('nomera-bal100k', '1'); } } catch (e) {}
 function save() { try { S.sig = sigHash(JSON.stringify(sansSig(S))); localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+/* одноразовый бонус: +1 000 000 ₽ всем, кто уже играл (новички и так стартуют с 1 000 000 ₽) */
+try {
+  if (!localStorage.getItem('nomera-bonus-1m')) {
+    if (HAD_SAVE) S.balance = Math.min(S.balance + 1000000, 1e13);
+    localStorage.setItem('nomera-bonus-1m', '1');
+  }
+} catch (e) {}
 save();
 /* ===== Игровое время: берётся с сервера и идёт по монотонным часам, поэтому перевод часов на устройстве ничего не даёт ===== */
 var TIME_API = 'https://bsrdpworzwbuzhrqarse.supabase.co/functions/v1/subscribe';   /* та же функция, действие «time» */
@@ -224,7 +233,7 @@ try {
     (S.inv || []).forEach(fixP);
     if (S.stat) { if (S.stat.bestP) { fixP(S.stat.bestP); S.stat.best = S.stat.bestP.price; } else S.stat.best = 0; }
     (S.last || []).forEach(fixP);
-    S.balance = 250000;
+    S.balance = 1000000;
     localStorage.setItem('nomera-price-v2', '1'); localStorage.setItem('nomera-price-v3', '1');
     save();
   }
@@ -246,7 +255,7 @@ try {
     (S.inv || []).forEach(fixQ);
     if (S.stat) { if (S.stat.bestP) { fixQ(S.stat.bestP); S.stat.best = S.stat.bestP.price; } }
     (S.last || []).forEach(fixQ);
-    S.balance = 250000;
+    S.balance = 1000000;
     localStorage.setItem('nomera-price-v3', '1');
     save();
   }
@@ -3012,6 +3021,7 @@ var PROMOS = {
   'WELCOME': {m: 100000},
   'FIRSTKEY': {c: 'bronze'}
 };
+/* Промокоды с общим лимитом (например WIN11) живут на сервере — таблица promo_codes в Supabase, см. promo.sql */
 var dnTab = 'main', dnAnim = false, dnNote = null;
 function dnEsc(t) { return String(t).replace(/[&<>"]/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]; }); }
 function dnCoin() { return '<img class="dn-coin" src="' + coinImg() + '" alt="" draggable="false">'; }
@@ -3191,10 +3201,27 @@ function promoRedeem() {
     return;
   }
   var p = Object.prototype.hasOwnProperty.call(PROMOS, code) ? PROMOS[code] : null;
-  if (!p) { dnSay('err', 'Такого промокода нет'); return; }
   if (!S.promo) S.promo = {};
   if (S.promo[code]) { dnSay('err', 'Этот промокод ты уже активировал'); return; }
+  if (!p) {   /* нет в локальном списке — спрашиваем сервер (общий лимит активаций, один раз на игрока) */
+    if (promoBusy) return; promoBusy = true;
+    subPost('promo', {code: code}).then(function (r) {
+      promoBusy = false;
+      if (r && r.ok) { promoApply(code, {m: r.m, d: r.d}, inp); return; }
+      var er = r && r.err;
+      if (er === 'already') { S.promo[code] = Date.now(); save(); dnSay('err', 'Этот промокод ты уже активировал'); }
+      else if (er === 'exhausted') dnSay('err', 'Лимит активаций этого промокода исчерпан');
+      else if (er === 'no_code') dnSay('err', 'Такого промокода нет');
+      else dnSay('err', 'Не удалось проверить промокод. Попробуй позже');
+    }).catch(function () { promoBusy = false; dnSay('err', 'Не удалось проверить промокод. Открой игру через Telegram и попробуй ещё раз'); });
+    return;
+  }
+  promoApply(code, p, inp);
+}
+var promoBusy = false;
+function promoApply(code, p, inp) {
   var parts = [], toRew = false, pt = center($('#pcGo') || inp);
+  if (!S.promo) S.promo = {};
   S.promo[code] = Date.now();
   if (p.d) { pushReward({type: 'donate', donate: p.d, from: 'Промокод ' + code}); parts.push('+' + p.d.toLocaleString('ru-RU') + ' доната'); toRew = true; }
   if (p.c && caseById(p.c)) { pushReward({type: 'case', caseId: p.c, n: 1, from: 'Промокод ' + code}); parts.push('«' + caseById(p.c).name + '»'); toRew = true; }
